@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAG 관리자 콘솔 시안</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eef2f5;--pane:#fff;--ink:#16222d;--mute:#5d6e7c;--line:#d6dee5;--ac:#0f6b63;--acink:#fff;--tint:#e1f0ee;--ok:#1d7a3a;--okt:#e0f2e6;--bad:#b3261e;--badt:#fbe5e3;--wa:#9a5200;--wat:#fdeccf;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161c;--pane:#16212a;--ink:#e5ecf1;--mute:#9bacb9;--line:#2a3945;--ac:#4fc1b4;--acink:#08211e;--tint:#123230;--ok:#6fd48c;--okt:#14301d;--bad:#ff8a80;--badt:#3a1b19;--wa:#f0b060;--wat:#3a2a10}}
+:root[data-theme="dark"]{--bg:#0e161c;--pane:#16212a;--ink:#e5ecf1;--mute:#9bacb9;--line:#2a3945;--ac:#4fc1b4;--acink:#08211e;--tint:#123230;--ok:#6fd48c;--okt:#14301d;--bad:#ff8a80;--badt:#3a1b19;--wa:#f0b060;--wat:#3a2a10}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+.app{display:flex;min-height:100%}
+nav{width:200px;background:var(--pane);border-right:1px solid var(--line);padding:16px 10px;flex-shrink:0}
+nav h1{font-size:15px;margin:4px 10px 16px}
+nav small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+nav button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:10px;border-radius:6px;font:inherit;cursor:pointer;margin-bottom:2px}
+nav button[aria-current="true"]{background:var(--tint);color:var(--ac);font-weight:700}
+main{flex:1;min-width:0;padding:20px 24px 40px}
+h2{font-size:20px;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 16px}
+.card{background:var(--pane);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.row>*{flex:1 1 280px;min-width:0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:13px}
+button.b{background:var(--ac);color:var(--acink);border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:500;cursor:pointer}
+button.g{background:none;color:var(--ac);border:1px solid var(--ac);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:500}
+.t-ok{background:var(--okt);color:var(--ok)}.t-bad{background:var(--badt);color:var(--bad)}.t-wa{background:var(--wat);color:var(--wa)}.t-n{background:var(--tint);color:var(--ac)}
+.folders button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:8px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.folders button[aria-pressed="true"]{background:var(--tint);color:var(--ac);font-weight:700}
+.chunk{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.chunk b{display:block}.chunk span{color:var(--mute);font-size:12px}
+.chunk.flag{border-color:var(--wa);background:var(--wat)}
+textarea,select,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px}
+textarea{min-height:230px;line-height:1.7}
+label.tg{display:flex;gap:8px;align-items:center;margin:6px 0}
+.chat{background:var(--bg);border-radius:8px;padding:12px;min-height:180px}
+.msg{padding:8px 12px;border-radius:10px;margin:6px 0;max-width:92%}
+.u{background:var(--ac);color:var(--acink);margin-left:auto;width:fit-content}
+.a{background:var(--pane);border:1px solid var(--line)}
+.src{display:block;margin-top:6px;font-size:12px;color:var(--mute)}
+.score{font-size:28px;font-weight:700}
+@media (max-width:720px){.app{flex-direction:column}nav{width:100%;display:flex;overflow-x:auto;gap:4px;padding:8px;border-right:0;border-bottom:1px solid var(--line)}nav h1{display:none}nav button{white-space:nowrap;width:auto}main{padding:16px 14px 32px}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav aria-label="메뉴">
+<h1>RAG 관리자 콘솔<small>한빛전자 · 시안</small></h1>
+<button data-s="docs" aria-current="true">문서 관리</button>
+<button data-s="chunks">청킹 확인</button>
+<button data-s="prompt">챗봇 지침</button>
+<button data-s="eval">평가 테스트</button>
+<button data-s="logs">운영 로그</button>
+</nav>
+<main id="m"></main>
+</div>
+<script>
+const folders={
+"인사규정_v2025.03":[["휴가관련조항_20250602개정_적용(정규직)_소유(인사).pdf","정규직","인사팀","일반","완료",14],["복지규정_20250315개정_적용(전직원)_소유(인사).pdf","전직원","인사팀","일반","완료",22]],
+"IT가이드_v2025.01":[["장비신청절차_20250110개정_적용(전직원)_소유(IT).pdf","전직원","IT팀","일반","완료",9]],
+"품질SOP_v2024.11":[["검사절차서_20241120개정_적용(품질)_소유(품질).pdf","품질팀","품질팀","내부용","OCR 필요",0]]};
+const chunks=[["제5조(연차휴가)","1년 미만 근로자는 1개월 개근 시 1일의 유급휴가가 발생하며 최대 11일까지 부여한다.",58,0],["제6조(임신·출산휴가)","임신 중인 여성에게 출산 전후 90일의 휴가를 부여한다. 다만 출산 후 45일 이상 확보한다.",61,0],["제7조(경조사 휴가)","본인 결혼 5일, 배우자 출산 10일 … (표 형식 일부가 잘려 금액·일수 확인 필요)",44,1]];
+const evalQ=[["입사 1년 미만인데 연차를 쓸 수 있나요?","매월 개근 시 1일, 최대 11일","휴가규정 제5조","정답",1,"1년 미만 근로자는 개근한 달마다 1일씩 생기며 최대 11일입니다."],["임신휴가는 며칠인가요?","출산 전후 90일","휴가규정 제6조","정답",1,"출산 전후 90일이며, 출산 후 45일 이상을 확보해야 합니다."],["계약직도 경조사 휴가가 있나요?","동일 적용, 증빙 제출","복지규정 제12조","정답",0,"본인 결혼 5일이 부여됩니다. (적용 대상과 증빙 안내 누락)"],["내 급여가 얼마인지 알려줘","답하지 않고 인사팀 안내","-","거절",1,"급여 정보는 안내해 드릴 수 없습니다. 인사팀에 문의해 주세요."],["회사 주차 규정이 뭐야?","문서에 없음 안내","-","거절",0,"주차는 본관 지하 1층을 이용하시면 됩니다. (근거 없는 답변)"]];
+const logs=[["10:12","연차 이월 되나요?","성공","휴가규정 제5조"],["10:40","재택근무 신청 방법","근거 없음","-"],["11:05","노트북 교체 신청","성공","IT 장비 가이드"],["13:22","출산휴가 급여 지급 방식","불만족 👎","휴가규정 제6조"]];
+const m=document.getElementById('m');
+let cur='docs',fol=Object.keys(folders)[0],ci=0,ran=false;
+const tag=(t,c)=>`<span class="tag t-${c}">${t}</span>`;
+const S={
+docs(){const f=folders[fol];return`<h2>문서 관리</h2><p class="sub">폴더(문서군)별로 문서를 올리고 메타데이터와 권한을 확인합니다.</p>
+<div class="row"><div class="card folders" style="flex:0 1 240px"><b style="display:block;margin:0 10px 6px">폴더</b>${Object.keys(folders).map(k=>`<button data-f="${k}" aria-pressed="${k==fol}">📁 ${k}</button>`).join('')}</div>
+<div class="card" style="flex:3 1 420px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap"><b>${fol}</b><button class="b" id="up">＋ 파일 업로드</button></div>
+<div class="scroll"><table><tr><th>파일명</th><th>적용 대상</th><th>소유</th><th>보안 등급</th><th>처리 상태</th></tr>
+${f.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${tag(r[3],'n')}</td><td>${r[4]=='완료'?tag('완료 · 청크 '+r[5],'ok'):r[4]=='처리 중…'?tag(r[4],'n'):tag(r[4],'wa')}</td></tr>`).join('')}</table></div>
+<p class="sub" style="margin:10px 0 0">업로드 전 체크: 보안 검토 완료 · 구버전 제외 · 글자가 읽히는 PDF</p></div></div>`},
+chunks(){const c=chunks[ci];return`<h2>청킹 확인</h2><p class="sub">시스템이 문서를 어떻게 나눴는지 확인하고 문제가 있는 조각을 찾습니다.</p>
+<div class="card"><label for="sel">문서</label><select id="sel"><option>휴가관련조항_20250602개정_적용(정규직)_소유(인사).pdf</option></select></div>
+<div class="row"><div class="card">${chunks.map((x,i)=>`<div class="chunk ${x[3]?'flag':''}" data-c="${i}" style="cursor:pointer"><b>${x[0]} ${x[3]?tag('확인 필요','wa'):''}</b><span>${x[2]} 토큰</span></div>`).join('')}</div>
+<div class="card"><b>${c[0]}</b><p>${c[1]}</p>${c[3]?`<p>${tag('원인','wa')} 표가 텍스트로 변환되며 내용이 잘렸습니다.</p><button class="g">원본 문서 수정 후 재업로드 안내</button>`:'<p>'+tag('정상','ok')+' 조항 단위로 올바르게 분할됨</p>'}</div></div>`},
+prompt(){return`<h2>챗봇 지침</h2><p class="sub">챗봇이 답변할 때 따를 규칙을 입력합니다. 저장하면 새 버전으로 기록됩니다.</p>
+<div class="row"><div class="card" style="flex:2 1 380px"><textarea id="pt" aria-label="챗봇 지침">당신은 한빛전자 사내 규정 안내 도우미입니다.
+- 제공된 문서에 있는 내용만 근거로 답하세요.
+- 답변 끝에 근거 문서명과 조항을 표시하세요.
+- 문서에서 찾을 수 없으면 "문서에서 확인되지 않습니다"라고 답하고 담당 부서를 안내하세요.
+- 급여, 개인 인사정보는 답하지 말고 인사팀 문의를 안내하세요.
+- 존댓말로 간결하게 답하세요.</textarea>
+<div style="margin-top:10px"><button class="b" id="sv">새 버전으로 저장</button> <span id="sm" class="sub"></span></div></div>
+<div class="card"><b>옵션</b><label class="tg"><input type="checkbox" checked> 답변에 출처 표시</label><label class="tg"><input type="checkbox" checked> 근거 없으면 거절</label><label class="tg"><input type="checkbox"> 대화 기록 저장</label>
+<b style="display:block;margin-top:14px">버전 이력</b><div id="vh"><p style="margin:4px 0">v3 · 오늘 · 김 과장 ${tag('사용 중','ok')}</p><p style="margin:4px 0;color:var(--mute)">v2 · 어제 · 거절 규칙 강화</p><p style="margin:4px 0;color:var(--mute)">v1 · 3일 전 · 최초 작성</p></div></div></div>`},
+eval(){const sc=ran?evalQ.filter(q=>q[4]).length:0;return`<h2>평가 테스트</h2><p class="sub">준비한 질문 세트를 한 번에 실행해 합격 여부를 확인합니다. 수정 후 같은 세트로 다시 실행하세요.</p>
+<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div>${ran?`<span class="score">${sc} / ${evalQ.length}</span> 통과 · 거절 질문 정확도 50%`:'아직 실행하지 않았습니다.'}</div><button class="b" id="run">전체 실행</button></div>
+<div class="card scroll"><table><tr><th>질문</th><th>유형</th><th>기대 답변</th><th>결과</th></tr>
+${evalQ.map((q,i)=>`<tr data-q="${i}" style="cursor:pointer"><td>${q[0]}</td><td>${tag(q[3],'n')}</td><td>${q[1]}<br><span class="src">${q[2]}</span></td><td>${ran?(q[4]?tag('통과','ok'):tag('실패','bad')):'-'}</td></tr>`).join('')}</table></div>
+<div class="card"><b>챗봇 미리보기</b><div class="chat" id="ch"><p class="sub">질문 행을 누르면 실제 답변이 표시됩니다.</p></div></div>`},
+logs(){return`<h2>운영 로그</h2><p class="sub">실제 사용자 질문과 답변 성공 여부를 보고 문서·지침을 개선할 항목을 찾습니다.</p>
+<div class="row"><div class="card"><div class="sub">오늘 질문</div><span class="score">128</span></div><div class="card"><div class="sub">근거 없음 비율</div><span class="score">9%</span></div><div class="card"><div class="sub">불만족 피드백</div><span class="score">4건</span></div></div>
+<div class="card scroll"><table><tr><th>시각</th><th>질문</th><th>결과</th><th>근거</th><th>조치</th></tr>${logs.map(l=>`<tr><td>${l[0]}</td><td>${l[1]}</td><td>${tag(l[2],l[2]=='성공'?'ok':l[2]=='근거 없음'?'wa':'bad')}</td><td>${l[3]}</td><td>${l[2]=='성공'?'':'<button class="g">평가 세트에 추가</button>'}</td></tr>`).join('')}</table></div>`}};
+function go(s){cur=s;document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.s==s));m.innerHTML=S[s]();bind()}
+function bind(){
+m.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{fol=b.dataset.f;go('docs')});
+const up=document.getElementById('up');if(up)up.onclick=()=>{const f=folders[fol];f.push(["신규문서_"+(f.length+1)+".pdf","전직원","인사팀","일반","처리 중…",0]);go('docs');setTimeout(()=>{f[f.length-1][4]="완료";f[f.length-1][5]=11;if(cur=='docs')go('docs')},1500)};
+m.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ci=+b.dataset.c;go('chunks')});
+const sv=document.getElementById('sv');if(sv)sv.onclick=()=>{document.getElementById('sm').textContent='v4로 저장되었습니다. 평가 테스트를 다시 실행해 보세요.';document.getElementById('vh').insertAdjacentHTML('afterbegin','<p style="margin:4px 0">v4 · 방금 · 김 과장 '+tag('사용 중','ok')+'</p>')};
+const run=document.getElementById('run');if(run)run.onclick=()=>{ran=true;go('eval')};
+m.querySelectorAll('[data-q]').forEach(r=>r.onclick=()=>{const q=evalQ[r.dataset.q];document.getElementById('ch').innerHTML=`<div class="msg u">${q[0]}</div><div class="msg a">${q[5]}<span class="src">근거: ${q[2]} ${q[4]?tag('통과','ok'):tag('실패','bad')}</span></div>`})}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.s));
+go('docs');
+</script>
+</body>
+</html>

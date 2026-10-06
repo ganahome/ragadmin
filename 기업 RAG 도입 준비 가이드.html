@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>기업 RAG 도입, 담당자가 가장 먼저 준비할 것</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f2f5f7;--surface:#fff;--ink:#14202b;--mute:#5a6b79;--line:#d5dde3;--accent:#0f6b63;--warm:#a8520f;--tint:#e3f1ef;--warmtint:#fbeedd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f171d;--surface:#17222a;--ink:#e6edf2;--mute:#9fb0bd;--line:#2c3b46;--accent:#4fc1b4;--warm:#f0a15c;--tint:#12312e;--warmtint:#3a2814}}
+:root[data-theme="dark"]{--bg:#0f171d;--surface:#17222a;--ink:#e6edf2;--mute:#9fb0bd;--line:#2c3b46;--accent:#4fc1b4;--warm:#f0a15c;--tint:#12312e;--warmtint:#3a2814}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.8 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+main{max-width:760px;margin:0 auto;padding:48px 20px 72px}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.3;margin:0 0 16px;letter-spacing:-.02em}
+h2{font-size:24px;margin:56px 0 12px;letter-spacing:-.01em}
+h3{font-size:18px;margin:0 0 4px}
+p{margin:0 0 14px}
+.lead{font-size:18px;color:var(--mute)}
+.key{background:var(--tint);border-left:4px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;margin:24px 0}
+.warn{background:var(--warmtint);border-left:4px solid var(--warm);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0}
+ol.steps{list-style:none;padding:0;margin:20px 0;counter-reset:s}
+ol.steps li{counter-increment:s;position:relative;padding:0 0 22px 52px;border-left:2px solid var(--line);margin-left:16px}
+ol.steps li:last-child{border-left-color:transparent}
+ol.steps li::before{content:counter(s);position:absolute;left:-17px;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:700;display:grid;place-items:center}
+ol.steps li p{margin:0;color:var(--mute)}
+.scroll{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--surface);font-size:15px}
+th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;line-height:1.6}
+th{background:var(--tint)}
+.co{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:16px 0}
+.co p{margin:0 0 6px}
+ul{padding-left:22px;margin:8px 0 14px}
+li{margin-bottom:4px}
+.q{font-weight:500}
+footer{margin-top:56px;color:var(--mute);font-size:14px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>기업 RAG 도입, 담당자가 가장 먼저 준비할 것</h1>
+<p class="lead">RAG(검색 증강 생성)는 AI 모델이 답하기 전에 회사 문서를 먼저 찾아 읽게 하는 방식입니다. 도입의 성패는 모델 선택보다 <b>어떤 질문에, 어떤 문서로, 누구에게</b> 답할지를 정하는 준비에서 갈립니다.</p>
+
+<div class="key">
+<b>핵심 요약</b>
+<p style="margin:6px 0 0">시스템을 고르기 전에 ① 풀 문제와 사용자, ② 문서 현황, ③ 접근 권한, ④ 정답 기준(평가 질문)을 먼저 확보하세요. 이 네 가지가 있으면 어떤 기술을 써도 PoC를 빠르게 검증할 수 있습니다.</p>
+</div>
+
+<h2>1. 준비 순서</h2>
+<ol class="steps">
+<li><h3>목표와 사용자 정하기</h3><p>"사내 규정 문의 응대 시간을 줄인다"처럼 한 문장으로 쓰고, 주 사용자(신입사원, 영업, 고객센터 등)와 성공 기준(응답 시간, 정확도, 문의 감소율)을 정합니다.</p></li>
+<li><h3>문서 목록(인벤토리) 만들기</h3><p>문서가 어디에 있는지(공유 드라이브, 위키, 메일, ERP), 형식(PDF, 문서, 표, 스캔본), 최신본 여부, 담당 부서를 표로 정리합니다.</p></li>
+<li><h3>보안·권한 기준 확정</h3><p>개인정보, 영업비밀, 인사정보가 섞여 있는지 분류하고, 직급·부서별로 볼 수 있는 문서를 구분합니다. 외부 클라우드 모델 사용 가능 여부도 이 단계에서 보안팀과 합의합니다.</p></li>
+<li><h3>문서 정리와 소유자 지정</h3><p>중복·구버전 문서를 걷어내고, 문서마다 제목, 개정일, 적용 대상 같은 메타데이터를 붙입니다. 문서가 바뀔 때 갱신할 담당자도 정합니다.</p></li>
+<li><h3>평가용 질문·정답 세트 만들기</h3><p>실제 사용자가 던질 질문 30~100개와 근거 문서, 기대 답변을 준비합니다. 이것이 PoC의 합격 기준이 됩니다.</p></li>
+<li><h3>작은 범위로 PoC</h3><p>한 부서, 한 문서군으로 시작해 검색 품질과 답변 정확도를 평가 세트로 측정하고, 임베딩 모델·청크 크기·검색 방식을 조정합니다.</p></li>
+<li><h3>운영 체계 설계</h3><p>문서 자동 갱신, 사용자 피드백 수집, 로그 점검, 비용 모니터링, 오답 신고 절차를 마련한 뒤 범위를 넓힙니다.</p></li>
+</ol>
+
+<h2>2. 기업 제공 예제: 한빛전자 사내 규정 도우미</h2>
+<p>아래는 설명을 위해 만든 가상의 사례입니다.</p>
+
+<div class="co">
+<p><b>회사</b>: 한빛전자 (직원 1,200명, 제조업)</p>
+<p><b>문제</b>: 인사팀·IT팀·품질팀에 규정 문의가 하루 평균 80건 들어오고, 대부분 문서에 이미 답이 있는 반복 질문이다.</p>
+<p><b>목표</b>: 6개월 안에 반복 문의 40% 감소, 답변에는 반드시 근거 문서와 조항을 표시.</p>
+<p><b>담당자</b>: 디지털혁신팀 김 과장 (인사·IT·품질·보안팀 담당자와 협업)</p>
+</div>
+
+<h3 style="margin-top:28px">① 기업이 제공하는 자료 (문서 인벤토리)</h3>
+<div class="scroll"><table>
+<tr><th>문서군</th><th>위치·형식</th><th>상태</th><th>민감도</th><th>소유 부서</th></tr>
+<tr><td>취업규칙, 휴가·복지 규정</td><td>공유 드라이브, PDF/Word</td><td>2025년 개정본과 구버전 혼재</td><td>일반</td><td>인사팀</td></tr>
+<tr><td>IT 보안·장비 신청 가이드</td><td>사내 위키, HTML</td><td>최신</td><td>일반</td><td>IT팀</td></tr>
+<tr><td>품질 절차서(SOP)</td><td>문서관리시스템, PDF(일부 스캔)</td><td>스캔본은 OCR 필요</td><td>내부용</td><td>품질팀</td></tr>
+<tr><td>급여 기준표</td><td>엑셀</td><td>최신</td><td><b>제한</b> (인사팀만)</td><td>인사팀</td></tr>
+<tr><td>자주 묻는 질문(FAQ) 메일 답변</td><td>메일 보관함</td><td>비정형, 개인정보 포함</td><td><b>제한</b></td><td>각 팀</td></tr>
+</table></div>
+<p>이 표를 만들면서 담당자는 바로 결정할 일이 생깁니다. 구버전 규정은 제외하고, 스캔본은 OCR로 변환하며, 급여 기준표와 메일은 1차 범위에서 뺍니다. <b>1차 PoC 범위는 인사 규정 + IT 가이드</b>로 좁힙니다.</p>
+
+<h3>② 문서 정리 규칙</h3>
+<ul>
+<li>파일명을 "인사_휴가규정_v2025.03"처럼 통일하고, 구버전은 별도 폴더로 이동</li>
+<li>각 문서에 메타데이터 부여: 제목, 개정일, 적용 대상(정규직/계약직), 소유 부서</li>
+<li>조항 단위로 나누기(청킹): 조항이 중간에 잘리지 않도록 "제5조 연차휴가" 같은 제목 단위로 분할</li>
+</ul>
+
+<h3>③ 평가용 질문 세트 (일부)</h3>
+<div class="scroll"><table>
+<tr><th>사용자 질문</th><th>기대 답변</th><th>근거 문서</th></tr>
+<tr><td class="q">입사 1년 미만인데 연차를 쓸 수 있나요?</td><td>매월 개근 시 1일씩 발생, 최대 11일</td><td>휴가규정 제5조</td></tr>
+<tr><td class="q">노트북 교체는 어떻게 신청하나요?</td><td>IT 포털 &gt; 장비 신청, 팀장 승인 후 3영업일</td><td>IT 장비 가이드</td></tr>
+<tr><td class="q">계약직도 경조사 휴가가 있나요?</td><td>동일 적용, 단 증빙 서류 제출</td><td>복지규정 제12조</td></tr>
+<tr><td class="q">내 급여가 얼마인지 알려줘</td><td>답변하지 않고 인사팀 문의 안내 (권한 제한)</td><td>해당 없음</td></tr>
+<tr><td class="q">회사 주차 규정이 뭐야?</td><td>"문서에서 찾을 수 없음"이라고 답하고 담당 부서 안내</td><td>없음</td></tr>
+</table></div>
+<p>마지막 두 질문은 <b>답하면 안 되는 질문</b>입니다. 평가 세트에는 정답이 있는 질문뿐 아니라, 권한이 없거나 문서에 없을 때 올바르게 거절하는지 확인하는 질문도 반드시 넣어야 합니다.</p>
+
+<h3>④ PoC 결과와 판단</h3>
+<div class="scroll"><table>
+<tr><th>지표</th><th>합격 기준</th><th>1차 결과</th><th>조치</th></tr>
+<tr><td>정답 근거 문서를 검색해 옴</td><td>90% 이상</td><td>78%</td><td>청크를 조항 단위로 재분할, 키워드 검색 병행</td></tr>
+<tr><td>답변 정확도(사람 평가)</td><td>85% 이상</td><td>81%</td><td>구버전 문서 제거 후 재측정</td></tr>
+<tr><td>근거 조항 표시율</td><td>100%</td><td>95%</td><td>답변 형식에 출처 필수 규칙 추가</td></tr>
+<tr><td>문서에 없는 질문 거절</td><td>95% 이상</td><td>70%</td><td>"근거가 없으면 모른다고 답하라" 지침 강화</td></tr>
+</table></div>
+<p>1차 결과가 기준에 못 미쳐도 실패가 아닙니다. 어떤 지표가 낮은지 보면 원인이 문서(구버전 혼재), 검색(청크 크기), 답변 지침(거절 규칙) 중 어디인지 알 수 있고, 평가 세트가 있기 때문에 고친 뒤 다시 측정할 수 있습니다.</p>
+
+<h2>3. 담당자 준비 체크리스트</h2>
+<ul>
+<li>풀 문제, 사용자, 성공 지표를 한 문장으로 정리했다</li>
+<li>문서 인벤토리(위치·형식·최신 여부·소유 부서·민감도)를 만들었다</li>
+<li>보안팀과 외부 모델 사용 범위, 개인정보 처리 방침을 합의했다</li>
+<li>문서별 접근 권한 기준을 정했다</li>
+<li>구버전 정리와 메타데이터 부여 규칙을 정했다</li>
+<li>평가 질문 30개 이상(거절해야 할 질문 포함)을 준비했다</li>
+<li>PoC 범위를 한 부서, 한 문서군으로 제한했다</li>
+<li>문서 갱신 담당자와 오답 신고 절차를 정했다</li>
+</ul>
+
+<h2>4. 자주 하는 실수</h2>
+<div class="warn">
+<ul style="margin:0">
+<li><b>문서 정리 없이 전부 투입</b>: 구버전과 신버전이 섞이면 모델이 틀린 규정을 근거로 답합니다.</li>
+<li><b>권한을 나중에 고려</b>: 검색 단계에서 권한을 걸러내지 않으면 접근 권한이 없는 정보가 답변에 노출될 수 있습니다.</li>
+<li><b>평가 기준 없이 "잘 되는 것 같다"로 판단</b>: 데모에서 몇 개 질문이 잘 답해도 실제 운영 품질은 알 수 없습니다.</li>
+<li><b>처음부터 전사 확대</b>: 작은 범위에서 검증하고 개선한 뒤 넓히는 편이 비용과 위험이 낮습니다.</li>
+<li><b>운영 담당자 부재</b>: 문서는 계속 바뀌므로 갱신 책임자가 없으면 시간이 지날수록 답변 품질이 떨어집니다.</li>
+</ul>
+</div>
+
+<footer>※ 한빛전자와 수치는 설명을 위한 가상 예시입니다. 실제 기준은 회사의 문서와 업무 환경에 맞게 조정하세요.</footer>
+</main>
+</body>
+</html>
